@@ -1,0 +1,124 @@
+﻿Міністерство освіти і науки України 
+Харківський національний університет радіоелектроніки 
+ 
+ 
+Кафедра програмної інженерії 
+ 
+   
+  
+Звіт до лабораторної роботи №1  
+з дисципліни  «Програмування під Аndrоіd» 
+на тему «ОПИСОВІ СТАТИСТИКИ»
+ 
+ 
+
+
+
+Виконала:                                                           	           Прийняв:
+ст. гр. ПЗПІ-23-4                                    	       	     	ст. викл.  Сокорчук І. П.
+Алєксєєва К. С.
+ 
+
+
+Харків 2024
+1. Завдання
+
+    Встановити Android Studio та створити мінімальний застосунок для Android.Застосунок повинен містити одну активність (Activity). В активності потрібно реалізувати усі базові методи життєвого циклу активностей. При запуску застосунку у центрі екрану повинен з'являтися напис «Task 1». Для розмітки екрану активності потрібно використати лінійну розмітку (Linear Layout).
+    
+    2. Хід роботи 
+    
+    Для виконання завдання я встановила Android Studio, що є основним середовищем розробки для Android-застосунків. Після завершення інсталяції я створила новий проект, вибравши шаблон «Empty Activity» та задавши ім’я проекту, наприклад, LabTask1. У процесі налаштування проекту я обрала мову програмування (Java) та визначила мінімальну версію SDK (наприклад, API 21).
+    Наступним кроком була реалізація активності. Я відкрила файл activity_main.xml, що знаходиться у папці res/layout, і внесла зміни, використовуючи лінійну розмітку (Linear Layout). У центрі екрана я розмістила елемент TextView, у якому написано «Task 1». Код розмітки виглядає наступним чином див. фрагм. код 1.1
+    
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Task 1"
+        android:textSize="24sp" />
+</LinearLayout>
+
+                                             Код 1.1 -  Код розмітки
+    
+    Після цього я реалізувала усі базові методи життєвого циклу активності в класі MainActivity. Я відкрила файл MainActivity.java і додала методи, такі як onCreate(), onStart(), onResume(), onPause(), onStop(),  onRestoreInstanceState(), onSaveInstanceState() та onDestroy(). Ці методи містять прості логічні оператори, які фіксують їх виклики в журналі, що допоможе відстежити життєвий цикл активності. (Див додаток А)
+    Після реалізації активності я запустила застосунок на емуляторі Android.(Рис 1.2)
+                      
+                      Рис 1.2 – Запуск програми
+                      
+    Після запуску на екрані з’явився текст «Task 1», розміщений у центрі, що підтвердило успішність виконання завдання. Цей процес надав мені корисний досвід у розробці Android-застосунків, а також допоміг ознайомитися з основами роботи в Android Studio.
+    
+    3.Висновки
+    
+    В процесі виконання завдання з розробки мінімального застосунку для Android, я отримала цінний досвід у використанні Android Studio та вивчила основи життєвого циклу активностей. Реалізація базових методів життєвого циклу дозволила мені краще зрозуміти, як Android управляє активностями, їх створенням, відображенням на екрані та взаємодією з користувачем.
+    Створення інтерфейсу за допомогою лінійної розмітки (Linear Layout) дало змогу наочно ознайомитися з основами проектування UI у мобільних застосунках. Завдяки простому текстовому елементу, що відображає напис «Task 1», я змогла перевірити, як працює основна логіка розмітки та взаємодія з компонентами.
+    Крім того, я вдосконалила свої навички програмування на Java, розбираючись у принципах організації коду та структурі Android-застосунків. Цей досвід підготував мене до подальшої роботи над більш складними проектами, оскільки я зрозуміла, як важливо планувати архітектуру програми та враховувати всі аспекти життєвого циклу активностей.  
+    
+    
+    4. Додатки
+    
+ 1) Додаток А
+public class MainActivity extends AppCompatActivity {
+    private static final String TAG = "MainActivity";
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        TextView textView = new TextView(this);
+        textView.setText("Task 1");
+        textView.setTextSize(24);
+        textView.setGravity(android.view.Gravity.CENTER);
+
+        setContentView(textView);
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.d(TAG,"onStart");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(TAG,"onResume");
+    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d(TAG, "onPause called");
+    }
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d(TAG, "onStop called");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy called");
+    }   @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("savedText", "Some text");
+        Log.d(TAG, "onSaveInstanceState called");
+    }
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        String savedText = savedInstanceState.getString("savedText");
+        Log.d(TAG, "onRestoreInstanceState called with text: " + savedText);
+    }
+    
+}
+                             Додаток А: Код активності MainActivity
