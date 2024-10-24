@@ -189,4 +189,4 @@ public class MainActivity extends AppCompatActivity {
 
                                                           Додаток B
 
-
+Використані джерела
