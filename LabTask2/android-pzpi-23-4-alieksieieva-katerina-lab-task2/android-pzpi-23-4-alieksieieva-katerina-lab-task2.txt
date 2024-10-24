@@ -1,1 +1,192 @@
+Міністерство освіти і науки України 
+Харківський національний університет радіоелектроніки 
+ 
+ 
+Кафедра програмної інженерії 
+ 
+   
+  
+Звіт до лабораторної роботи №3  
+з дисципліни  «Програмування під Аndrоіd» 
+
+ 
+
+
+
+Виконала:                                                           	           Прийняв:
+ст. гр. ПЗПІ-23-4                                    	       	     	ст. викл.  Сокорчук І. П.
+Алєксєєва К. С.
+ 
+
+
+Харків 2024
+
+1. Завдання
+
+    Розробити редактор, у якому з допомогою трьох регуляторів SeekBar встановлюється колір панелі. Регулятори визначають RGB компоненти кольору панелі. Зовнішній вигляд екрану редактора повинен залежати від орієнтації пристроя. У портретній орієнтації пристроя, регулятори повинні знаходитися знизу від панелі, займати 1/3 висоти і розташовуватися на всю ширину екрану. У ланшафтній – праворуч від панелі і займати 1/3 ширини. Решту екрану повинна займати кольорова панель.
+    
+    2. Хід роботи 
+    
+    В рамках лабораторної роботи було розроблено редактор кольорів панелі, який дозволяє користувачу налаштовувати колір за допомогою трьох регуляторів (SeekBar). Кожен із регуляторів відповідає за одну з компонент кольору — червону (R), зелену (G) та синю (B). Основна мета — створити інтерфейс, який змінює розташування елементів залежно від орієнтації пристрою та дозволяє користувачу зручно керувати кольором панелі.
+    1. Розробка інтерфейсу
+    Для створення графічного інтерфейсу використано LinearLayout та GridLayout. Основні компоненти калькулятора представлені у вигляді кнопок, розміщених у сітці для зручності доступу. (Див додаток А)
+    2. Адаптивний дизайн
+    В залежності від орієнтації пристрою, компоненти інтерфейсу автоматично змінюють своє розташування:
+    1. Портретний режим: 
+    регулятори розташовуються під панеллю кольору і займають 1/3 висоти екрана.
+    2. Ландшафтний режим: 
+    регулятори розташовані праворуч і займають 1/3 ширини екрана. Це дозволяє максимально ефективно використовувати доступний простір.
+    3. Реалізація функціональності
+    Основна логіка реалізована в класі MainActivity. Регулятори (SeekBar) відповідають за RGB-компоненти кольору і змінюють колір панелі в режимі реального часу. (Див. додаток B)
+    Оновлення кольору: updateColor()
+    Метод відповідає за оновлення кольору панелі. Він отримує поточні значення трьох регуляторів (червоного, зеленого та синього компонентів), формує з них колір за допомогою методу Color.rgb(), і встановлює цей колір як фон для панелі. (див. код 2.1)
+private void updateColor() {
+
+    int red = seekBarR.getProgress();
+    int green = seekBarG.getProgress();
+    int blue = seekBarB.getProgress();
+
+
+    int color = Color.rgb(red, green, blue);
+    colorPanel.setBackgroundColor(color);
+}
+                               Код 2.1 – Оновлення кольору
+     Метод colorChangeListener()
+    Цей внутрішній анонімний клас реалізує інтерфейс SeekBar.OnSeekBarChangeListener для обробки змін у регуляторах. Він містить три методи:
+    onProgressChanged(SeekBar seekBar, int progress, boolean fromUser)
+    Викликається щоразу, коли значення регулятора змінюється. У нашому випадку цей метод викликає updateColor(), щоб оновити колір панелі на основі нових значень RGB.
+    onStartTrackingTouch(SeekBar seekBar)
+    Викликається, коли користувач починає взаємодіяти з регулятором. В цьому додатку цей метод не виконує жодних дій.
+    onStopTrackingTouch(SeekBar seekBar)
+    Викликається, коли користувач припиняє змінювати регулятор. Тут також не виконується жодна додаткова логіка.(див. код 2.2)
+private final SeekBar.OnSeekBarChangeListener colorChangeListener = new SeekBar.OnSeekBarChangeListener() {
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        updateColor();
+    }
+
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
+
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+
+    }
+};
+                                     Код 2.2  – Обробка змін у регуляторах
+    
+    Обробка подій:
+     Для кожного SeekBar використовується OnSeekBarChangeListener, який реагує на зміну значення регулятора і викликає метод updateColor(). Цей метод обчислює новий колір на основі поточних значень регуляторів і встановлює його як фон для панелі кольору.
+    
+    3.Висновки
+    
+    У ході виконання роботи було розроблено функціональний редактор кольору, який динамічно реагує на зміни регуляторів і дозволяє користувачу налаштовувати колір панелі. Інтерфейс програми є адаптивним та автоматично підлаштовується під орієнтацію пристрою. Це забезпечує зручність користування на різних екранах і у різних положеннях пристрою.
+    
+    4. Додатки
+    
+ 1) Додаток А
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+
+    <LinearLayout
+        android:id="@+id/colorPanel"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2"
+        android:background="#FFFFFF"
+        android:orientation="vertical" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="horizontal">
+
+        <SeekBar
+            android:id="@+id/seekBarR"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:max="255"
+            android:progress="0" />
+
+        <SeekBar
+            android:id="@+id/seekBarG"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:max="255"
+            android:progress="0" />
+
+        <SeekBar
+            android:id="@+id/seekBarB"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:max="255"
+            android:progress="0" />
+    </LinearLayout>
+</LinearLayout>
+                                                 Додаток А
+2) Додаток B
+
+public class MainActivity extends AppCompatActivity {
+
+    private LinearLayout colorPanel;
+    private SeekBar seekBarR, seekBarG, seekBarB;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+
+        colorPanel = findViewById(R.id.colorPanel);
+        seekBarR = findViewById(R.id.seekBarR);
+        seekBarG = findViewById(R.id.seekBarG);
+        seekBarB = findViewById(R.id.seekBarB);
+
+        seekBarR.setOnSeekBarChangeListener(colorChangeListener);
+        seekBarG.setOnSeekBarChangeListener(colorChangeListener);
+        seekBarB.setOnSeekBarChangeListener(colorChangeListener);
+    }
+
+    private final SeekBar.OnSeekBarChangeListener colorChangeListener = new SeekBar.OnSeekBarChangeListener() {
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            updateColor();
+        }
+
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {
+
+        }
+
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {
+
+        }
+    };
+
+    private void updateColor() {
+
+        int red = seekBarR.getProgress();
+        int green = seekBarG.getProgress();
+        int blue = seekBarB.getProgress();
+
+
+        int color = Color.rgb(red, green, blue);
+        colorPanel.setBackgroundColor(color);
+    }
+}
+
+                                                          Додаток B
+
 
