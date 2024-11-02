@@ -1,1 +1,445 @@
+Міністерство освіти і науки України  
+Харківський національний університет радіоелектроніки  
+  
+  
+Кафедра програмної інженерії  
+  
+    
+   
+Звіт до практичної роботи №2   з дисципліни  «Програмування під Аndrоіd» 
+  
+  
+ 
+ 
+ 
+Виконала:                                                            	           Прийняв: 
+ст. гр. ПЗПІ-23-4                                     	              	ст. викл.  Сокорчук І. П. 
+Алєксєєва К. С. 
+  
+ 
+ 
+Харків 2024 
+1. Завдання 
+     
+    Навчитися створювати та налаштовувати розмітку екрана в Android-застосунках, використовуючи XML-файли. Зрозуміти, як компоненти інтерфейсу користувача розташовуються на екрані та взаємодіють між собою. Навчитися створювати XML-файли розмітки та використовувати різні типи Layout для побудови інтерфейсу застосунку. Ознайомитися із життєвим циклом компонентів Activity у застосунках Android та навчити керувати станами Activity через використання ключових методів життєвого циклу.
+    
+2. Хід роботи  
+ 
+    У цьому проекті розроблено Android застосунок, що складається з двох основних активностей: MainActivity та RegistrationActivity. Застосунок реалізує базові функції, такі як введення тексту, ведення лічильника кліків, таймер, а також форму реєстрації користувача. Основні функції
+    MainActivity
+    Елементи управління:
+    TextView для виводу тексту та лічильника кліків.
+    EditText для введення користувацького тексту.
+    Кнопки для виконання різних дій (зміна тексту, показ повідомлення, ведення лічильника кліків).
+    ImageView для відображення зображення.
+    Логіка:
+    Після натискання кнопки, текст у TextView змінюється, і виводиться тостове повідомлення.
+    Ведення таймера, що відображає кількість секунд, що минули, з можливістю зупиняти і запускати його при переході між станами активності.
+    Збереження стану елементів інтерфейсу при змінах конфігурації (наприклад, при обертанні екрану) за допомогою методів onSaveInstanceState та onRestoreInstanceState. див. додаток А
+                                             
+ 
+    Після цього я реалізувала  основну логіку застосунку. Ініціалізація TextView і Button: Використовуємо метод findViewById() для доступу до елементів інтерфейсу, заданих у activity_main.xml.
+    Встановлення обробника натискання: Використовуємо метод setOnClickListener() для кнопки, який змінює текст у TextView при натисканні.
+    Оновлення тексту: При натисканні на кнопку текст TextView оновлюється до "Текст змінено!".  (Див додаток А) 
+    Після реалізації активності я запустила застосунок на емуляторі  
+    Після запуску на екрані з’явився текст «Hello World», розміщений у центрі, що підтвердило успішність виконання завдання. Цей процес надав мені корисний досвід у розробці Android-застосунків, а також допоміг ознайомитися з основами роботи в Android Studio. 
+    Основні елементи класу MainActivity:
+    Змінні класу:
+    textView, textView1, editText, clickCountTextView, timerTextView: елементи інтерфейсу для відображення тексту та введення даних.
+    savedText: змінна для збереження тексту з EditText.
+    clickCount: лічильник натискань кнопки.
+    handler, timerCount: для реалізації таймера.
+    Метод onCreate():
+    Ініціалізує активність та елементи інтерфейсу.
+    Відновлює збережені дані, якщо активність була перезапущена.
+    Встановлює обробники подій для кнопок:
+    Кнопка, що викликає сповіщення (Toast).
+    Кнопка, що переходить до RegistrationActivity.
+    Кнопки, які змінюють текст у textView1, відображають сповіщення та оновлюють лічильник натискань.
+    Методи життєвого циклу:
+    onStart(), onResume(), onPause(), onStop(), onDestroy(): логують виклики для відстеження зміни стану активності.
+    onSaveInstanceState(): зберігає текст з EditText і значення лічильника натискань, щоб відновити їх у разі перезапуску активності.
+    onRestoreInstanceState(): відновлює збережені дані.
+    Методи для кнопок:
+    onButtonChangeText(View view): змінює текст у textView1.
+    onButtonShowToast(View view): відображає сповіщення при натисканні на кнопку.
+    incrementClickCount(): збільшує лічильник натискань і оновлює його відображення.
+    Таймер:
+    startTimer(): запускає таймер, який щосекунди збільшує значення timerCount та оновлює timerTextView.
+    stopTimer(): зупиняє таймер, видаляючи виклики з handler.
+    Дослідження методів життєвого циклу:
+    Логування методів життєвого циклу:
+    Логування в методах onCreate(), onStart(), onResume(), onPause(), onStop(), onDestroy() дозволяє відстежити послідовність викликів під час запуску та закриття Activity.
+    Зміна орієнтації екрана:
+    Увімкнення автоматичної зміни орієнтації та спостереження за викликами методів життєвого циклу при зміні орієнтації (портретна на ландшафтну).
+    Зміна орієнтації призводить до викликів onPause(), onStop(), onDestroy(), а потім onCreate(), onStart(), onResume().
+    Збереження стану при зміні орієнтації:
+    Використання методів onSaveInstanceState() та onRestoreInstanceState() для збереження та відновлення тексту в EditText, а також значення лічильника натискань.
+    Перехід між Activity:
+    Створення другого Activity та кнопки для переходу до нього.
+    Відстеження викликів методів життєвого циклу при переході між Activity.
+    Завершення Activity:
+    Додавання кнопки для виклику методу finish(), щоб завершити Activity.
+    Спостереження за змінами у послідовності викликів методів життєвого циклу.
+    Клас MainActivity демонструє основи управління інтерфейсом користувача, обробку подій, таймери та управління станом при зміні орієнтації екрана. Логування методів життєвого циклу надає важливу інформацію для розуміння порядку викликів, що допомагає в оптимізації роботи програми.
+    RegistrationActivity
+    Елементи управління:
+    EditText для введення імені користувача, електронної пошти та пароля.
+    Кнопка для підтвердження реєстрації.
+    Логіка:
+    Перевірка введених даних перед реєстрацією (належність формату електронної пошти, довжина пароля).
+    Показ повідомлення про успішну реєстрацію.див додаток B
+ 
+Розмітка 
+    1. Створення макету з використанням RelativeLayout
+    Першим етапом була реалізація інтерфейсу за допомогою RelativeLayout. У цьому макеті було розміщено чотири кнопки, зокрема:
+    
+    Button 1: Розташована у верхній частині макету.
+    Button 2: Знаходиться нижче Button 1 з відступом у 16dp.
+    Button 3: Розміщена нижче Button 2, також з відступом у 16dp.
+    Button 4: Розташована праворуч від Button 2, вирівняна по базовій лінії з нею.
+    Цей макет демонструє використання атрибутів layout_below, layout_toRightOf, а також layout_alignBaseline, що дозволяє гнучко керувати позиціюванням елементів.
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
 
+    <Button
+        android:id="@+id/button1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Button 1" />
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Button 2"
+        android:layout_below="@id/button1"
+        android:layout_marginTop="16dp" />
+
+    <Button
+        android:id="@+id/button3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Button 3"
+        android:layout_below="@id/button2"
+        android:layout_marginTop="16dp" />
+
+    <Button
+        android:id="@+id/button4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Button 4"
+        android:layout_toRightOf="@id/button2"
+        android:layout_marginLeft="16dp"
+        android:layout_alignBaseline="@id/button2" />
+</RelativeLayout>
+    
+    2. Створення макету з використанням LinearLayout
+    Другим етапом була розробка інтерфейсу за допомогою LinearLayout з вертикальною орієнтацією. У цьому макеті також було розміщено три кнопки, які центровано на екрані:
+    Button 1
+    Button 2
+    Button 3
+    Усі кнопки мають однакову ширину (wrap_content) і висоту (wrap_content), а також налаштовані на центроване вирівнювання за допомогою атрибуту layout_gravity.
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:gravity="center">
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Button 1"
+        android:layout_gravity="center" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Button 2"
+        android:layout_gravity="center" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Button 3"
+        android:layout_gravity="center" />
+</LinearLayout>
+    
+    3. Створення макету з використанням ConstraintLayout
+    Останнім етапом було створення інтерфейсу за допомогою ConstraintLayout, що дозволяє більш складне позиціонування елементів. У цьому макеті також було розміщено чотири кнопки:
+    
+    Button 1: Закріплена у верхній частині контейнера.
+    Button 2: Розміщена під Button 1 з відступом у 16dp.
+    Button 3: Розташована під Button 2 з аналогічним відступом.
+    Button 4: Розташована під Button 3.
+    Цей макет демонструє використання атрибутів для встановлення обмежень (constraints), що дозволяє контролювати позиціювання елементів відносно один одного і контейнера.
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="16dp">
+
+    <Button
+        android:id="@+id/button1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Button 1"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Button 2"
+        app:layout_constraintTop_toBottomOf="@id/button1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp" />
+
+    <Button
+        android:id="@+id/button3"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Button 3"
+        app:layout_constraintTop_toBottomOf="@id/button2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp" />
+
+    <Button
+        android:id="@+id/button4"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Button 4"
+        app:layout_constraintTop_toBottomOf="@id/button3"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp" />
+</androidx.constraintlayout.widget.ConstraintLayout>
+    
+3.Висновки 
+ 
+    У проведених дослідженнях та практичних завданнях щодо роботи з життєвим циклом Activity в Android було охоплено кілька ключових аспектів, які важливі для розробників. Ось основні висновки:
+    В результаті виконаної роботи було отримано практичний досвід у створенні різних типів макетів для Android-додатків. Кожен з використаних макетів (RelativeLayout, LinearLayout, ConstraintLayout) має свої особливості та переваги, які були продемонстровані під час розробки інтерфейсу. Це знання стане корисним для подальшої роботи над більш складними проектами в Android.
+    Розуміння життєвого циклу Activity:
+    Логування викликів методів життєвого циклу (onCreate(), onStart(), onResume(), onPause(), onStop(), onDestroy()) допомагає зрозуміти порядок виконання цих методів під час запуску та закриття Activity. Це знання є критично важливим для управління ресурсами та забезпечення плавної роботи програми.
+    Обробка змін конфігурації:
+    Дослідження поведінки Activity під час зміни орієнтації екрана показало, що автоматичне перезавантаження Activity веде до викликів методів onPause(), onStop(), і onDestroy(), що вимагає належного управління станом. Використання onSaveInstanceState() та onRestoreInstanceState() для збереження та відновлення даних (таких як текст у полях введення) дозволяє покращити досвід користувача, запобігаючи втраті інформації.
+    Навігація між Activity та їх завершення:
+    Завдання, що включає створення другого Activity та кнопок для навігації, підкреслило важливість управління переходами між екранами. Відстеження викликів життєвого циклу під час переходу та завершення Activity забезпечує чітке розуміння управління ресурсами та поведінки програми в цілому.
+ 
+4. Додатки 
+ 
+ 1) Додаток А 
+
+public class MainActivity extends AppCompatActivity {
+    private static final String TAG = "MainActivity";
+    private TextView textView;
+    private TextView textView1;
+    private EditText editText;
+    private String savedText;
+
+    private int clickCount = 0;
+    private TextView clickCountTextView;
+
+    private Handler handler = new Handler();
+    private int timerCount = 0;
+    private TextView timerTextView;
+    private Runnable timerRunnable;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        Log.d(TAG, "onCreate called");
+
+        textView = findViewById(R.id.textView);
+        textView1 = findViewById(R.id.textView1);
+        editText = findViewById(R.id.editText);
+        clickCountTextView = findViewById(R.id.clickCountTextView);
+        timerTextView = findViewById(R.id.textView);
+
+        if (savedInstanceState != null) {
+            savedText = savedInstanceState.getString("SAVED_TEXT");
+            clickCount = savedInstanceState.getInt("CLICK_COUNT", 0);
+            editText.setText(savedText);
+        }
+        updateClickCountDisplay();
+        startTimer();
+
+        Button button = findViewById(R.id.button);
+        button.setOnClickListener(v -> {
+            Toast.makeText(MainActivity.this, "Button clicked!", Toast.LENGTH_SHORT).show();
+        });
+
+
+        Button buttonGoToRegistration = findViewById(R.id.buttonGoToRegistration);
+        buttonGoToRegistration.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, RegistrationActivity.class);
+            startActivity(intent);
+        });
+
+        Button button1 = findViewById(R.id.button1);
+        button1.setOnClickListener(v -> onButtonChangeText(v));
+
+        Button button2 = findViewById(R.id.button2);
+        button2.setOnClickListener(v -> onButtonShowToast(v));
+
+        Button button3 = findViewById(R.id.button3);
+        button3.setOnClickListener(v -> incrementClickCount());
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.d(TAG, "onStart called");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume called");
+        startTimer();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d(TAG, "onPause called");
+        stopTimer();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d(TAG, "onStop called");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy called");
+        stopTimer();
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Log.d(TAG, "onSaveInstanceState called");
+
+        outState.putString("SAVED_TEXT", editText.getText().toString());
+        outState.putInt("CLICK_COUNT", clickCount);
+        outState.putInt("TIMER_COUNT", timerCount);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        Log.d(TAG, "onRestoreInstanceState called");
+
+        savedText = savedInstanceState.getString("SAVED_TEXT");
+        clickCount = savedInstanceState.getInt("CLICK_COUNT", 0);
+        timerCount = savedInstanceState.getInt("TIMER_COUNT", 0);
+        editText.setText(savedText);
+        updateClickCountDisplay();
+        timerTextView.setText("Timer: " + timerCount);
+    }
+
+    public void onButtonChangeText(View view) {
+        textView1.setText("Text Changed!");
+    }
+
+    public void onButtonShowToast(View view) {
+        Toast.makeText(this, "Button 2 clicked!", Toast.LENGTH_SHORT).show();
+    }
+
+    private void incrementClickCount() {
+        clickCount++;
+        updateClickCountDisplay();
+    }
+
+    private void updateClickCountDisplay() {
+        clickCountTextView.setText("Click Count: " + clickCount);
+    }
+
+    private void startTimer() {
+        timerRunnable = new Runnable() {
+            @Override
+            public void run() {
+                timerCount++;
+                timerTextView.setText("Timer: " + timerCount);
+                handler.postDelayed(this, 1000);
+            }
+        };
+        handler.postDelayed(timerRunnable, 1000);
+    }
+
+    private void stopTimer() {
+        handler.removeCallbacks(timerRunnable);
+    }
+}
+
+                             Додаток А: Код активності MainActivity 
+2) Додаток B
+
+public class RegistrationActivity extends AppCompatActivity {
+
+    private EditText editTextUsername, editTextEmail, editTextPassword;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_registration);
+
+        editTextUsername = findViewById(R.id.editTextUsername);
+        editTextEmail = findViewById(R.id.editTextEmail);
+        editTextPassword = findViewById(R.id.editTextPassword);
+
+        Button buttonRegister = findViewById(R.id.buttonRegister);
+        buttonRegister.setOnClickListener(v -> registerUser());
+    }
+
+    private void registerUser() {
+        String username = editTextUsername.getText().toString().trim();
+        String email = editTextEmail.getText().toString().trim();
+        String password = editTextPassword.getText().toString().trim();
+
+
+        if (validateInputs(username, email, password)) {
+
+            Toast.makeText(this, "Registration Successful!", Toast.LENGTH_SHORT).show();
+
+            finish();
+        }
+    }
+
+    private boolean validateInputs(String username, String email, String password) {
+        if (username.isEmpty()) {
+            editTextUsername.setError("Username is required");
+            return false;
+        }
+
+        if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            editTextEmail.setError("Valid email is required");
+            return false;
+        }
+
+        if (password.isEmpty() || password.length() < 6) {
+            editTextPassword.setError("Password must be at least 6 characters");
+            return false;
+        }
+
+        return true;
+    }
+}
+Додаток А: Код активності RegistrrationActivity
+      
