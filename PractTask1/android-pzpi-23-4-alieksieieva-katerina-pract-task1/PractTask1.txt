@@ -1,0 +1,93 @@
+﻿Міністерство освіти і науки України  
+Харківський національний університет радіоелектроніки  
+  
+  
+Кафедра програмної інженерії  
+  
+    
+   
+Звіт до практичної роботи №1   з дисципліни  «Програмування під Аndrоіd» 
+  
+  
+ 
+ 
+ 
+Виконала:                                                            	           Прийняв: 
+ст. гр. ПЗПІ-23-4                                     	              	ст. викл.  Сокорчук І. П. 
+Алєксєєва К. С. 
+  
+ 
+ 
+Харків 2024 
+1. Завдання 
+     
+    Вивчити основні елементи структури Android-застосунку та процес компіляції та запуску на емуляторі або фізичному пристрої.
+ 
+2. Хід роботи  
+ 
+    Для створення мінімального Android-застосунку ми розпочали з запуску Android Studio та створення нового проєкту. Обрали шаблон Empty Activity і заповнили необхідну інформацію, включаючи назву проєкту, ім'я пакету, місце збереження, мову програмування та мінімальну версію SDK. Після цього натиснули Finish для завершення налаштувань.
+    Після створення проєкту ми ознайомилися зі структурою файлів. У файлі MainActivity.java знайшли метод onCreate(), який викликається під час створення активності, а у файлі activity_main.xml — макет інтерфейсу, в якому знаходився базовий TextView.  Ми використовуємо RelativeLayout, тому що він дозволяє розташовувати елементи відносно один одного або батьківського контейнера. У цьому прикладі RelativeLayout використовується для:
+1. Центрування TextView у контейнері: Встановлюючи android:layout_centerInParent="true", ми забезпечуємо розміщення TextView по центру контейнера.
+2. Розташування кнопки Button під TextView: З допомогою android:layout_below="@id/textView" кнопка розташовується прямо під TextView, а android:layout_centerHorizontal="true" дозволяє центрувати її горизонтально, як і TextView.
+    Використання RelativeLayout надає гнучкості в розміщенні елементів, оскільки ми можемо прив'язувати їх розташування до інших елементів, що часто спрощує компонування інтерфейсу користувача. див. фрагм. код 1.1 
+ 
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hello, world!"
+        android:layout_centerInParent="true"
+        android:textSize="24sp" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Натисніть кнопку"
+        android:layout_below="@id/textView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp" />
+
+</RelativeLayout>
+                                             Код 1.1 -  Код розмітки 
+ 
+    Після цього я реалізувала  основну логіку застосунку. Ініціалізація TextView і Button: Використовуємо метод findViewById() для доступу до елементів інтерфейсу, заданих у activity_main.xml.
+    Встановлення обробника натискання: Використовуємо метод setOnClickListener() для кнопки, який змінює текст у TextView при натисканні.
+    Оновлення тексту: При натисканні на кнопку текст TextView оновлюється до "Текст змінено!".  (Див додаток А) 
+    Після реалізації активності я запустила застосунок на емуляторі 
+ 
+    Після запуску на екрані з’явився текст «Hello World», розміщений у центрі, що підтвердило успішність виконання завдання. Цей процес надав мені корисний досвід у розробці Android-застосунків, а також допоміг ознайомитися з основами роботи в Android Studio. 
+ 
+3.Висновки 
+ 
+У результаті виконаної роботи ми створили мінімальний Android-застосунок із кнопкою та текстовим полем. Розглянули основні етапи роботи в Android Studio: створення нового проєкту, налаштування інтерфейсу користувача, додавання елементів у макет, а також встановлення обробника подій для кнопки. Застосунок успішно змінює текст у TextView при натисканні на кнопку, що підтверджує правильність  налаштувань і реалізації логіки взаємодії з інтерфейсом. Цей досвід склав основу для розуміння базових принципів розробки Android-застосунків, взаємодії між елементами інтерфейсу та обробки подій.
+
+ 
+4. Додатки 
+ 
+ 1) Додаток А 
+
+public class MainActivity extends AppCompatActivity {
+    private TextView textView;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        textView=findViewById(R.id.textView);
+        Button button = findViewById(R.id.button);
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                textView.setText("Текст змінено!");
+            }
+        });
+    }
+}
+
+                             Додаток А: Код активності MainActivity 
