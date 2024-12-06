@@ -1,0 +1,363 @@
+Міністерство освіти і науки України   
+Харківський національний університет радіоелектроніки   
+   
+   
+Кафедра програмної інженерії   
+   
+     
+    
+Звіт до практичної роботи №3   з дисципліни  «Програмування під Аndrоіd»  
+   
+   
+  
+  
+  
+Виконала:                                                             	           Прийняв:  
+ст. гр. ПЗПІ-23-4                                      	               	ст. викл.  Сокорчук І. П.  
+Алєксєєва К. С.  
+   
+  
+Харків 2024  
+1. Завдання  
+Ознайомитися з основними типами діалогових панелей в Android.
+Навчитися створювати та використовувати діалогові панелі в Android-застосунках.Засвоїти методи для налаштування діалогових панелей та їх взаємодії з користувачем. Засвоїти концепцію черги повідомлень (Message Queue) в Android.Вивчити роботу з обробником повідомлень (Handler) для взаємодії з потоками.Навчитися створювати та використовувати Handler для асинхронної обробки даних. Навчити студентів працювати з компонентом RecyclerView для створення списків із прогортанням в Android, а також ознайомити їх з принципами створення та використання адаптерів (Adapters) і керування даними у списках.
+  
+2. Хід роботи   
+  
+HandlerPractice
+Цей клас демонструє роботу з об'єктом Handler у різних сценаріях, включаючи передачу повідомлень між потоками, виконання затриманих завдань і взаємодію з фоновими потоками.
+
+public class HandlerPractice extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_handler_practice);
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
+
+        Button startHandlerButton = findViewById(R.id.startHandlerButton);
+        TextView handlerMessageTextView = findViewById(R.id.handlerMessageTextView);
+        Handler handler = new Handler(Looper.getMainLooper()) {
+            @Override
+            public void handleMessage(Message msg){
+                handlerMessageTextView.setText("Message received: " + msg.what);
+            }
+        };
+        startHandlerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        TextView textView = findViewById(R.id.handlerMessageTextView);
+                        textView.setText("Handler executed after delay");
+                    }
+                }, 2000);
+            }
+        });
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(12000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        TextView textView = findViewById(R.id.handlerMessageTextView);
+                        textView.setText("Updated from background thread");
+                    }
+                });
+            }
+        }).start();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(8000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                Message msg = handler.obtainMessage();
+                msg.what = 1;
+                handler.sendMessage(msg);
+            }
+        }).start();
+
+        Button back = findViewById(R.id.finish);
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
+        HandlerThread handlerThread = new HandlerThread("BackgroundThread");
+        handlerThread.start();
+        Handler backgroundHandler = new Handler(handlerThread.getLooper());
+
+        backgroundHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(4000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        handlerMessageTextView.setText("Задача у фоновому потоці завершена");
+                    }
+                });
+            }
+        });
+    }
+}
+onCreate(Bundle savedInstanceState):
+• Встановлює макет activity_handler_practice.
+• Налаштовує Edge-to-Edge-дизайн.
+• Реалізує кнопки та обробники подій:
+o startHandlerButton: Запускає затримане виконання за допомогою Handler.postDelayed().
+o Фонові потоки: Ініціює два фонові потоки:
+• Перший після затримки оновлює TextView з використанням Handler.post().
+• Другий відправляє повідомлення Message для обробки в методі handleMessage().
+o HandlerThread: Ініціює окремий HandlerThread для виконання задач у фоновому потоці.
+
+2. MainActivity
+Головна активність застосунка. Вона демонструє роботу з діалогами, управління інтерфейсом та перехід між активностями.
+onCreate(Bundle savedInstanceState):
+Встановлює макет activity_main і налаштовує Edge-to-Edge-дизайн.
+Реалізує функціонал:
+showDialogButton: Відображає діалог підтвердження для зміни кольору тексту.
+showDatePickerButton: Відкриває діалог вибору дати та відображає її в TextView.
+showCustomDialogButton: Відображає кастомний діалог із текстовим полем, дозволяючи оновити TextView.
+moveToActivityHandlerPractice: Перехід до активності HandlerPractice.
+moveToRecyclerViewAdapterPractice: Перехід до активності RecyclerViewAdapterPractice.
+
+public class MainActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_main);
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
+
+        Button showDialogButton = findViewById(R.id.showDialogButton);
+        TextView textView = findViewById(R.id.textView);
+        showDialogButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new AlertDialog.Builder(MainActivity.this)
+                        .setTitle("Зміна кольору")
+                        .setMessage("Ви хочете, щоб текст був зеленого кольору?")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                textView.setTextColor(Color.GREEN);
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        })
+                        .show();
+            }
+        });
+
+        Button showDatePickerButton = findViewById(R.id.showDatePickerButton);
+        showDatePickerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DatePickerDialog datePickerDialog = new DatePickerDialog(MainActivity.this, new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                        textView.setText(year + "/" + month + "/" + dayOfMonth);
+                    }
+                }, 2023, 8, 1);
+                datePickerDialog.show();
+            }
+        });
+
+        Button showCustomDialogButton = findViewById(R.id.showCustomDialogButton);
+        showCustomDialogButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v){
+                LayoutInflater inflater = getLayoutInflater();
+                View dialogView = inflater.inflate(R.layout.custom_dialog, null);
+                EditText editText = dialogView.findViewById(R.id.customDialogInput);
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setView(dialogView)
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                textView.setText(editText.getText().toString());
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        });
+                builder.create().show();
+            }
+        });
+
+        Button moveToActivityHandlerPractice = findViewById(R.id.activityHandlerPractice);
+        moveToActivityHandlerPractice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, HandlerPractice.class);
+                startActivity(intent);
+            }
+        });
+        Button moveToRecyclerViewAdapterPractice = findViewById(R.id.recyclerViewAdapterPractice);
+        moveToRecyclerViewAdapterPractice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, RecyclerViewAdapterPractice.class);
+                startActivity(intent);
+            }
+        });
+    }
+}
+
+3. RecyclerViewAdapterPractice
+Призначення:
+Демонструє використання RecyclerView для відображення списку елементів із текстом і зображеннями.
+•  onCreate(Bundle savedInstanceState):
+• Встановлює макет activity_recycler_view_adapter_practice.
+• Реалізує RecyclerView із вертикальним розташуванням елементів.
+• Ініціалізує адаптер із масивом текстових даних і зображень.
+• Реалізує кнопку для повернення до попередньої активності.
+• @Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    EdgeToEdge.enable(this);
+    setContentView(R.layout.activity_recycler_view_adapter_practice);
+    ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+        Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+        v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+        return insets;
+    });
+    Button back = findViewById(R.id.back);
+    back.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            finish();
+        }
+    });
+    RecyclerView recyclerView = findViewById(R.id.recyclerView);
+    recyclerView.setLayoutManager(new LinearLayoutManager(this));
+    String[] myDataset = {"Mango", "Banana", "Orange"};
+    int[] images = {R.drawable.images, R.drawable.kiwi, R.drawable.orange};
+    MyAdapter adapter = new MyAdapter(myDataset, images);
+    recyclerView.setAdapter((adapter));
+}
+
+•  MyAdapter:
+Внутрішній клас для управління елементами в RecyclerView.
+• ViewHolder: Зберігає посилання на елементи списку (текст і зображення).
+• onCreateViewHolder: Створює елемент списку з XML-макета.
+• onBindViewHolder: Заповнює елемент списку даними та налаштовує обробник кліків, який показує назву елемента у сповіщенні Toast.
+• public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder>{
+
+    public class ViewHolder extends RecyclerView.ViewHolder{
+        public TextView textView;
+        public ImageView imageView;
+        public ViewHolder(View v) {
+            super(v);
+            textView = v.findViewById(R.id.textView);
+            imageView = v.findViewById(R.id.imageView);
+        }
+    }
+    private int[] mImages;
+    private String[] mData;
+
+
+    public MyAdapter(String[] data, int[] images){
+
+        mImages = images;
+        mData = data;
+    }
+
+    @NonNull
+    @Override
+    public MyAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.list_item, parent, false);
+        return new ViewHolder(v);
+    }
+    @Override
+    public int getItemCount() {
+        return mData.length;
+    }
+    @Override
+    public void onBindViewHolder(ViewHolder holder, int position) {
+        holder.textView.setText(mData[position]);
+        holder.imageView.setImageResource(mImages[position]);
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int currentPosition = holder.getAdapterPosition();
+                if (currentPosition != RecyclerView.NO_POSITION) {
+                    Toast.makeText(v.getContext(), mData[currentPosition], Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+    }
+
+}
+
+Усі класи реалізують сучасні підходи до розробки Android-застосунків, зокрема:
+Використання об'єктів Handler для міжпотокової комунікації.
+Організація роботи з діалогами (AlertDialog, DatePickerDialog).
+Використання RecyclerView для відображення динамічних списків.
+Використання кастомного дизайну елементів інтерфейсу.
+Макет для HandlerPractice
+•  LinearLayout:
+Контейнер, який розташовує елементи вертикально один за одним.
+•  Button (@+id/startHandlerButton):
+Кнопка для запуску роботи Handler.
+•  TextView (@+id/handlerMessageTextView):
+Текстовий елемент, у якому відображаються повідомлення або статуси, отримані від Handler.
+•  Button (@+id/finish):
+Кнопка для завершення активності.
+Макет для елемента списку у RecyclerView
+•  LinearLayout:
+Розташовує текст і зображення вертикально.
+•  TextView (@+id/textView):
+Відображає текст назви елемента списку.
+•  ImageView (@+id/imageView):
+Відображає відповідне зображення елемента списку.
+Макет для RecyclerViewAdapterPractice
+•  RecyclerView (@+id/recyclerView):
+Контейнер для відображення списку елементів із використанням адаптера.
+•  Button (@+id/back):
+Кнопка для повернення до попередньої активності.
+3.Висновки  
+Створене програмне забезпечення демонструє основи роботи з Android UI-компонентами, обробниками (Handler), потоками, адаптерами RecyclerView, та діалоговими вікнами. Ключові аспекти та висновки з роботи над цим ПЗ:Робота з потоками та Handler:
+Показано, як використовувати Handler для взаємодії між потоками та оновлення інтерфейсу користувача.
+Продемонстровано використання HandlerThread для виконання фонових завдань і оновлення UI через метод runOnUiThread.Діалогові вікна:
+Реалізовано стандартні діалогові вікна (AlertDialog) для взаємодії з користувачем.
+Показано використання кастомного діалогу з можливістю отримання тексту від користувача.
+Робота зі списками:Реалізовано адаптер для RecyclerView, що відображає текст та зображення.
+Додано обробку кліків на елементи списку для взаємодії з користувачем.
+Додаток: https://youtu.be/gi89Nkv3e40
