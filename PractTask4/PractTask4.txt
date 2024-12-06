@@ -1,0 +1,306 @@
+Міністерство освіти і науки України   
+Харківський національний університет радіоелектроніки   
+   
+   
+Кафедра програмної інженерії   
+   
+     
+    
+Звіт до практичної роботи №4   з дисципліни  «Програмування під Аndrоіd»  
+   
+   
+  
+  
+  
+Виконала:                                                             	           Прийняв:  
+ст. гр. ПЗПІ-23-4                                      	               	ст. викл.  Сокорчук І. П.  
+Алєксєєва К. С.  
+   
+  
+Харків 2024  
+1. Завдання  
+Ознайомити студентів із різними способами збереження даних у Android, зокрема з використанням SharedPreferences, бази даних SQLite та роботи з файлами. Навчити студентів застосовувати ці методи у прикладних проєктах  
+2. Хід роботи   
+  
+MainActivity
+Цей клас є головною активністю програми, яка:
+* Зберігає та завантажує дані користувача з SharedPreferences.
+* Дозволяє переходити до інших активностей.
+Основні функції:
+     Ініціалізує інтерфейс, встановлює відступи для підтримки EdgeToEdge.
+     Налаштовує кнопки:
+     Збереження даних користувача в SharedPreferences.
+     Перехід до активності SQLitePracticeActivity.
+     Завантажує попередньо збережені дані користувача, якщо вони існують.
+public class MainActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_main);
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
+        SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+
+
+        Button chooseButton = findViewById(R.id.chooseButton);
+        EditText editTextName = findViewById(R.id.editTextName);
+        EditText editTextAge = findViewById(R.id.editTextAge);
+        Button moveToActivitySqlitePracticeButton = findViewById(R.id.moveToActivitySqlitePractice);
+
+        moveToActivitySqlitePracticeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, SQLitePracticeActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        chooseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString("name", editTextName.getText().toString());
+                editor.putInt("age", Integer.parseInt(editTextAge.getText().toString()));
+                editor.apply();
+            }
+        });
+
+        String name = sharedPreferences.getString("name", "default_value");
+
+        if (!name.equals("default_value")){
+            editTextName.setText(name);
+        }
+
+        int age = sharedPreferences.getInt("age", 0);
+
+        if (age != 0){
+            editTextAge.setText(String.valueOf(age));
+        }
+
+
+    }
+}
+	
+2. DBHelper
+Призначення:
+Цей клас є допоміжним для роботи з SQLite-базою даних. Для ініціалізації структури бази даних.
+• public class DBHelper extends SQLiteOpenHelper {
+
+
+    public DBHelper(@Nullable Context context, @Nullable String name, @Nullable SQLiteDatabase.CursorFactory factory, int version) {
+        super(context, name, factory, version);
+    }
+
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+        db.execSQL("CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT, age INTEGER)");
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+
+    }
+
+    public long onInsert(String name, int age){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("name", name);
+        values.put("age", age);
+        return  db.insert("users", null, values);
+    }
+
+    public Cursor getAllUsers(){
+        SQLiteDatabase db = this.getReadableDatabase();
+        return db.query("users", null, null, null, null, null, null);
+    }
+
+    public void deleteAllUsers(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete("users", null, null);
+    }
+}
+
+
+2. onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
+Цей клас забезпечує можливість оновлення структури бази даних при зміні версії. Щоб додавати нові функції або структури в базу даних.
+@Override
+public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+
+}
+
+3. onInsert(String name, int age)
+Вставляє новий запис користувача з полями name і age у таблицю users. Для додавання нових даних у базу.
+public long onInsert(String name, int age){
+    SQLiteDatabase db = this.getWritableDatabase();
+    ContentValues values = new ContentValues();
+    values.put("name", name);
+    values.put("age", age);
+    return  db.insert("users", null, values);
+}
+4. getAllUsers()
+Для отримання даних про всіх користувачів.
+public Cursor getAllUsers(){
+    SQLiteDatabase db = this.getReadableDatabase();
+    return db.query("users", null, null, null, null, null, null);
+}
+5. deleteAllUsers()
+Видаляє всі записи з таблиці users.
+public void deleteAllUsers(){
+    SQLiteDatabase db = this.getWritableDatabase();
+    db.delete("users", null, null);
+}
+
+3. FilePracticeActivity
+Призначення:
+Цей клас демонструє роботу з файлами для збереження та завантаження тексту..
+Особливості реалізації:
+onCreate(Bundle savedInstanceState)
+ Ініціалізує інтерфейс.
+Налаштовує кнопки для запису та читання файлів.
+Для роботи з локальними файлами на пристрої.
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    EdgeToEdge.enable(this);
+    setContentView(R.layout.activity_file_practice);
+    ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+        Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+        v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+        return insets;
+    });
+    EditText editText = findViewById(R.id.fileText);
+    Button readButton = findViewById(R.id.readButton);
+    Button writeButton = findViewById(R.id.writeButton);
+    readButton.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            FileInputStream fis = null;
+            try {
+                fis = openFileInput("myfile.txt");
+                int c;
+                String temp = "";
+                while( (c = fis.read()) != -1) {
+                    temp = temp + Character.toString((char)c);
+                }
+                fis.close();
+                editText.setText(temp);
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+        }
+    });
+    writeButton.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            FileOutputStream fos = null;
+            try {
+                fos = openFileOutput("myfile.txt", Context.MODE_PRIVATE);
+                fos.write(editText.getText().toString().getBytes());
+                fos.close();
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+        }
+    });
+}
+
+writeButton.onClick(View v)
+• Що робить:
+Зберігає текст із поля EditText у файл myfile.txt.
+readButton.onClick(View v)
+• Що робить:
+Читає вміст файлу myfile.txt і відображає його в полі EditText.
+
+4. SQLitePracticeActivity
+Призначення:
+Цей клас демонструє роботу з базою даних SQLite, використовуючи DBHelper.
+onCreate(Bundle savedInstanceState)
+
+•  ніціалізує інтерфейс.
+•  Налаштовує кнопки:
+• Додавання нового користувача до бази даних.
+• Видалення всіх записів із бази даних.
+• Перехід до активності FilePracticeActivity.
+
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    EdgeToEdge.enable(this);
+    setContentView(R.layout.activity_sqlite_practice);
+    ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+        Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+        v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+        return insets;
+    });
+
+    Button chooseButton = findViewById(R.id.chooseButton);
+    EditText editTextName = findViewById(R.id.editTextName);
+    EditText editTextAge = findViewById(R.id.editTextAge);
+    listItems = findViewById(R.id.listItemsw);
+    Button deleteButton = findViewById(R.id.deleteButtonw);
+    Button moveToFilePracticeActivityButton = findViewById(R.id.moveToFilePracticeActivity2);
+
+    moveToFilePracticeActivityButton.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(SQLitePracticeActivity.this, FilePracticeActivity.class);
+            startActivity(intent);
+        }
+    });
+
+    chooseButton.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            String name = editTextName.getText().toString();
+            int age = Integer.parseInt(editTextAge.getText().toString());
+            db.onInsert(name, age);
+            UpdateList();
+        }
+    });
+
+    deleteButton.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            db.deleteAllUsers();
+            UpdateList();
+        }
+    });
+    UpdateList();
+}
+
+chooseButton.onClick(View v)
+• Що робить:
+Додає нового користувача до бази даних, викликаючи метод onInsert() із класу DBHelper.
+• chooseButton.setOnClickListener(new View.OnClickListener() {
+    @Override
+    public void onClick(View v) {
+        String name = editTextName.getText().toString();
+        int age = Integer.parseInt(editTextAge.getText().toString());
+        db.onInsert(name, age);
+        UpdateList();
+    }
+});
+
+deleteButton.onClick(View v)
+• Що робить:
+Очищає базу даних, викликаючи метод deleteAllUsers() із класу DBHelper.
+UpdateList()
+• Що робить:
+Завантажує всі записи з бази даних, формує рядок і відображає його в TextView.
+• Чому використовуємо:
+Для оновлення списку користувачів після змін у базі.
+SharedPreferences використовуються для збереження простих даних, які потрібні при повторному відкритті програми.
+3.Висновки  
+У процесі виконання роботи ми реалізували багатофункціональний Android-застосунок, який включає кілька функцій для збереження, завантаження та управління даними. Основна мета полягала в опануванні різних способів збереження даних, організації переходів між екранами та роботи з користувацьким інтерфейсом.
+Додаток: https://youtu.be/mw-3ltBNGPw
