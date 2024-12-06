@@ -245,4 +245,4 @@ public class GyroscopeActivity extends AppCompatActivity {
     }
 }
 Додаток C: Код активності AccelerometerActivity
-
+YouTube: https://youtu.be/jWcGFW1PoCA
