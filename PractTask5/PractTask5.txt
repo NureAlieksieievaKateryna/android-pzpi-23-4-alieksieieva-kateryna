@@ -1,0 +1,248 @@
+Міністерство освіти і науки України   
+Харківський національний університет радіоелектроніки   
+   
+   
+Кафедра програмної інженерії   
+   
+     
+    
+Звіт до практичної роботи №5   з дисципліни  «Програмування під Аndrоіd»  
+   
+   
+  
+  
+  
+Виконала:                                                             	           Прийняв:  
+ст. гр. ПЗПІ-23-4                                      	               	ст. викл.  Сокорчук І. П.  
+Алєксєєва К. С.  
+   
+  
+Харків 2024  
+1. Завдання  
+Ознайомитися з основними типами сенсорів у Android.
+Опанувати процес зчитування даних із сенсорів та їх обробку.
+Навчитися використовувати клас SensorManager для керування сенсорами.
+
+  
+2. Хід роботи   
+  
+MainActivity
+Призначення:
+Це головний екран додатка, який забезпечує навігацію між різними активностями.
+Основні функції:
+• Містить три кнопки:
+1. "Accelerometer Task" — перехід до екрану роботи з акселерометром (AccelerometerActivity).
+2. "Gyroscope Task" — перехід до екрану роботи з гіроскопом (GyroscopeActivity).
+3. "Sensor Comparison Task" — перехід до екрану порівняння даних з різних сенсорів (SensorComparisonActivity).
+onCreate(Bundle savedInstanceState)
+buttonAccelerometer.setOnClickListener(v -> startActivity(new Intent(this, AccelerometerActivity.class))); buttonGyroscope.setOnClickListener(v -> startActivity(new Intent(this, GyroscopeActivity.class))); buttonSensorComparison.setOnClickListener(v -> startActivity(new Intent(this, SensorComparisonActivity.class)));
+
+Особливості реалізації:
+• Кнопки реалізовані через обробники подій setOnClickListener, які запускають відповідні активності за допомогою Intent.
+
+2. AccelerometerActivity
+Призначення:
+Демонструє дані акселерометра пристрою.	
+Основні функції:
+• Отримує значення прискорення за трьома осями (X, Y, Z).
+• Виводить ці дані на екран у форматі:
+makefile
+Копировать код
+X: <значення>
+Y: <значення>
+Z: <значення>
+Особливості реалізації:
+• Використовується SensorManager для доступу до акселерометра.
+• Значення сенсора обробляються через SensorEventListener.
+• У методах життєвого циклу onResume і onPause здійснюється підключення та відключення обробника сенсора для оптимізації використання ресурсів.
+onCreate(Bundle savedInstanceState)
+Ініціалізує макет activity_accelerometer.
+Створює об’єкт акселерометра та слухача подій:
+Отримує значення x, y, z.
+Виводить значення у TextView.
+accelerometerListener = new SensorEventListener() { @Override public void onSensorChanged(SensorEvent event) { float x = event.values[0]; float y = event.values[1]; float z = event.values[2]; accelerometerText.setText("X: " + x + "\nY: " + y + "\nZ: " + z); } @Override public void onAccuracyChanged(Sensor sensor, int accuracy) {} };
+onResume()
+Реєструє слухача подій для акселерометра.
+onPause()
+Відключає слухача подій для економії ресурсів.
+
+
+3. GyroscopeActivity
+Призначення:
+Демонструє дані гіроскопа пристрою.
+Основні функції:
+• Отримує значення кутової швидкості за трьома осями (X, Y, Z).
+• Виводить ці дані на екран у форматі, аналогічному акселерометру.
+Особливості реалізації:
+• Структура класу аналогічна до AccelerometerActivity, але використовує сенсор гіроскопа (Sensor.TYPE_GYROSCOPE).
+
+onCreate(Bundle savedInstanceState)
+Ініціалізує макет activity_gyroscope.
+Створює об’єкт гіроскопа та слухача подій.
+Аналогічно AccelerometerActivity, але для Sensor.TYPE_GYROSCOPE.
+onResume()
+Реєструє слухача подій для гіроскопа.
+onPause()
+Відключає слухача подій.
+
+4. SensorComparisonActivity
+Призначення:
+Надає можливість користувачу порівнювати дані різних сенсорів пристрою (акселерометр, гіроскоп, магнітометр).
+Основні функції:
+• Містить випадаючий список (Spinner) для вибору сенсора.
+• Після вибору сенсора відображає його значення у форматі:
+makefile
+Копировать код
+X: <значення>
+Y: <значення>
+Z: <значення>
+• Якщо обраний сенсор недоступний на пристрої, виводиться повідомлення "Sensor not available".
+Особливості реалізації:
+• Використовується ArrayAdapter для заповнення списку сенсорів.
+• Метод updateSensorListener оновлює обробник подій для обраного сенсора.
+• Реалізовано динамічне підключення та відключення сенсора в залежності від вибору користувача.
+onCreate(Bundle savedInstanceState)
+
+Ініціалізує макет activity_sensor_comparison.
+Створює випадаючий список зі списком сенсорів:
+{"Accelerometer", "Gyroscope", "Magnetometer"}.
+Обробляє вибір сенсора у Spinner:
+Присвоює об’єкт selectedSensor в залежності від вибору користувача.
+Викликає метод updateSensorListener() для оновлення слухача подій.
+sensorSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() { @Override public void onItemSelected(AdapterView<?> parent, android.view.View view, int position, long id) { switch (position) { case 0: selectedSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER); break; case 1: selectedSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE); break; case 2: selectedSensor = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD); break; } updateSensorListener(); } @Override public void onNothingSelected(AdapterView<?> parent) {} });
+
+updateSensorListener()
+Перезапускає слухач подій для обраного сенсора.
+Якщо сенсор недоступний, виводить повідомлення "Sensor not available".
+onResume()
+Реєструє слухача подій для обраного сенсора.
+onPause()
+Відключає слухача подій.
+Основні технології та бібліотеки:
+1. SensorManager:
+Дозволяє отримувати доступ до датчиків пристрою.
+2. SensorEventListener:
+Використовується для обробки змін значень сенсорів у режимі реального часу.
+3. ConstraintLayout:
+Забезпечує адаптивну та гнучку верстку інтерфейсу для кожної активності.
+4. Intent:
+Використовується для навігації між активностями.
+ 
+3.Висновки  
+На цій практичній ми навчилися опановувати процес зчитування даних із сенсорів та їх обробку.
+
+Створили  програму яка реалізує роботу з сенсорами Android, дозволяючи:
+Відображати дані акселерометра.Відображати дані гіроскопа.
+Порівнювати дані акселерометра, гіроскопа та магнітометра в режимі реального часу.  
+4. Додатки  
+  
+ 1) Додаток А  
+ public class MainActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        Button buttonAccelerometer = findViewById(R.id.buttonAccelerometer);
+        Button buttonGyroscope = findViewById(R.id.buttonGyroscope);
+        Button buttonSensorComparison = findViewById(R.id.buttonSensorComparison);
+
+        buttonAccelerometer.setOnClickListener(v -> startActivity(new Intent(this, AccelerometerActivity.class)));
+        buttonGyroscope.setOnClickListener(v -> startActivity(new Intent(this, GyroscopeActivity.class)));
+                buttonSensorComparison.setOnClickListener(v -> startActivity(new Intent(this, SensorComparisonActivity.class)));
+    }
+}
+
+                             Додаток А: Код активності MainActivity  2) Додаток B 
+
+public class GyroscopeActivity extends AppCompatActivity {
+
+    private SensorManager sensorManager;
+    private Sensor gyroscope;
+    private SensorEventListener gyroscopeListener;
+    private TextView gyroscopeText;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_gyroscope);
+
+        gyroscopeText = findViewById(R.id.gyroscopeText);
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        gyroscope = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+
+        gyroscopeListener = new SensorEventListener() {
+            @Override
+            public void onSensorChanged(SensorEvent event) {
+                float x = event.values[0];
+                float y = event.values[1];
+                float z = event.values[2];
+                gyroscopeText.setText("X: " + x + "\nY: " + y + "\nZ: " + z);
+            }
+
+            @Override
+            public void onAccuracyChanged(Sensor sensor, int accuracy) {}
+        };
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        sensorManager.registerListener(gyroscopeListener, gyroscope, SensorManager.SENSOR_DELAY_NORMAL);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        sensorManager.unregisterListener(gyroscopeListener);
+    }
+}
+
+Додаток В: Код активності GyroscopeActivity
+
+Додаток C:
+ public class AccelerometerActivity extends AppCompatActivity {
+
+    private SensorManager sensorManager;
+    private Sensor accelerometer;
+    private SensorEventListener accelerometerListener;
+    private TextView accelerometerText;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_accelerometer);
+
+        accelerometerText = findViewById(R.id.accelerometerText);
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+
+        accelerometerListener = new SensorEventListener() {
+            @Override
+            public void onSensorChanged(SensorEvent event) {
+                float x = event.values[0];
+                float y = event.values[1];
+                float z = event.values[2];
+                accelerometerText.setText("X: " + x + "\nY: " + y + "\nZ: " + z);
+            }
+
+            @Override
+            public void onAccuracyChanged(Sensor sensor, int accuracy) {}
+        };
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        sensorManager.registerListener(accelerometerListener, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        sensorManager.unregisterListener(accelerometerListener);
+    }
+}
+Додаток C: Код активності AccelerometerActivity
+
