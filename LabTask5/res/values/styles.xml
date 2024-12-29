@@ -1,0 +1,25 @@
+<resources>
+    <style name="purpleStyle">
+        <item name="android:windowBackground">@color/purple</item>
+    </style>
+    <style name="greenStyle">
+        <item name="android:windowBackground">@color/green</item>
+    </style>
+    <style name="smallFontSize">
+        <item name="android:textSize">12sp</item>
+    </style>
+    <style name="mediumFontSize">
+        <item name="android:textSize">16sp</item>
+    </style>
+    <style name="largeFontSize">
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <!-- Fullscreen container theme -->
+    <style name="Theme.LabTask5.FullscreenContainer" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
+
+</resources>
